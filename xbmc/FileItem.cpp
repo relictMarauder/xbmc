@@ -1135,6 +1135,16 @@ bool CFileItem::IsReadOnly() const
   return !CUtil::SupportsWriteFileOperations(m_strPath);
 }
 
+ bool CFileItem::IsResuming() const
+{
+  return m_lStartOffset == STARTOFFSET_RESUME;
+}
+
+ void CFileItem::SetIsResuming()
+{
+  m_lStartOffset = STARTOFFSET_RESUME;
+}
+
 void CFileItem::FillInDefaultIcon()
 {
   //CLog::Log(LOGINFO, "FillInDefaultIcon(%s)", pItem->GetLabel().c_str());

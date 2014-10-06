@@ -652,7 +652,7 @@ int CBuiltins::Execute(const std::string& execString)
       else if (StringUtils::EqualsNoCase(params[i], "resume"))
       {
         // force the item to resume (if applicable) (see CApplication::PlayMedia)
-        item.m_lStartOffset = STARTOFFSET_RESUME;
+        item.SetIsResuming();
         askToResume = false;
       }
       else if (StringUtils::EqualsNoCase(params[i], "noresume"))

@@ -159,7 +159,7 @@ bool CPluginDirectory::GetPluginResult(const std::string& strPath, CFileItem &re
     resultItem.SetMimeType(newDir->m_fileResult->GetMimeType());
     resultItem.UpdateInfo(*newDir->m_fileResult);
     if (newDir->m_fileResult->HasVideoInfoTag() && newDir->m_fileResult->GetVideoInfoTag()->m_resumePoint.IsSet())
-      resultItem.m_lStartOffset = STARTOFFSET_RESUME; // resume point set in the resume item, so force resume
+      resultItem.SetIsResuming(); // resume point set in the resume item, so force resume
   }
   delete newDir;
 

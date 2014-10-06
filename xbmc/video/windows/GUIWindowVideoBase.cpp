@@ -985,7 +985,7 @@ bool CGUIWindowVideoBase::OnFileAction(int iItem, int action)
     OnPopupMenu(iItem);
     return true;
   case SELECT_ACTION_RESUME:
-    item->m_lStartOffset = STARTOFFSET_RESUME;
+    item->SetIsResuming();
     break;
   case SELECT_ACTION_PLAYPART:
     if (!OnPlayStackPart(iItem))
@@ -1082,7 +1082,7 @@ bool CGUIWindowVideoBase::ShowResumeMenu(CFileItem &item)
       if (retVal < 0)
         return false; // don't do anything
       if (retVal == 1)
-        item.m_lStartOffset = STARTOFFSET_RESUME;
+        item.SetIsResuming();
     }
   }
   return true;

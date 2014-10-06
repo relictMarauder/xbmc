@@ -3668,7 +3668,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     int startoffset = item.m_lStartOffset;
 
     // check if we instructed the stack to resume from default
-    if (startoffset == STARTOFFSET_RESUME) // selected file is not specified, pick the 'last' resume point
+    if (item.IsResuming()) // selected file is not specified, pick the 'last' resume point
     {
       if (dbs.Open())
       {
@@ -3700,7 +3700,15 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     }
 
     // set startoffset in movieitem, track stack item for updating purposes, and finally play disc part
-    movieList[selectedFile - 1]->m_lStartOffset = startoffset > 0 ? STARTOFFSET_RESUME : 0;
+    if (startoffset > 0)
+    {
+      movieList[selectedFile - 1]->SetIsResuming();
+    }
+    else
+    {
+      movieList[selectedFile - 1]->m_lStartOffset = 0;
+    }
+    
     movieList[selectedFile - 1]->SetProperty("stackFileItemToUpdate", true);
     *m_stackFileItemToUpdate = item;
     return PlayFile(*(movieList[selectedFile - 1]));
@@ -3750,14 +3758,14 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
 
     double seconds = item.m_lStartOffset / 75.0;
 
-    if (!haveTimes || item.m_lStartOffset == STARTOFFSET_RESUME )
+    if (!haveTimes || item.IsResuming() )
     {  // have our times now, so update the dB
       if (dbs.Open())
       {
         if( !haveTimes )
           dbs.SetStackTimes(item.GetPath(), times);
 
-        if( item.m_lStartOffset == STARTOFFSET_RESUME )
+        if (item.IsResuming())
         {
           // can only resume seek here, not dvdstate
           CBookmark bookmark;
@@ -3914,7 +3922,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
     // have to be set here due to playstack using this for starting the file
     options.starttime = item.m_lStartOffset / 75.0;
     if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0 && m_itemCurrentFile->m_lStartOffset != 0)
-      m_itemCurrentFile->m_lStartOffset = STARTOFFSET_RESUME; // to force fullscreen switching
+      m_itemCurrentFile->SetIsResuming(); // to force fullscreen switching
 
     if( m_eForcedNextPlayer != EPC_NONE )
       eNewCore = m_eForcedNextPlayer;
@@ -3934,7 +3942,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
       CVideoDatabase dbs;
       dbs.Open();
 
-      if( item.m_lStartOffset == STARTOFFSET_RESUME )
+      if (item.IsResuming())
       {
         options.starttime = 0.0f;
         CBookmark bookmark;
@@ -3990,7 +3998,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
     // TODO - this will fail if user seeks back to first file in stack
-    if(m_currentStackPosition == 0 || m_itemCurrentFile->m_lStartOffset == STARTOFFSET_RESUME)
+    if (m_currentStackPosition == 0 || m_itemCurrentFile->IsResuming())
       options.fullscreen = g_advancedSettings.m_fullScreenOnMovieStart && !CMediaSettings::Get().DoesVideoStartWindowed();
     else
       options.fullscreen = false;

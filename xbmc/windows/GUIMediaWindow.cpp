@@ -1005,6 +1005,9 @@ bool CGUIMediaWindow::OnClick(int iItem)
   }
   else if (pItem->IsPlugin() && !pItem->GetProperty("isplayable").asBoolean())
   {
+    CURL url(pItem->GetPath());
+    url.SetOption("kodi_isresuming", StringUtils::Format("%d", pItem->IsResuming()));
+    url.SetOption("kodi_currentResumeTime", StringUtils::Format("%f", pItem->GetCurrentResumeTime()));
     return XFILE::CPluginDirectory::RunScriptWithParams(pItem->GetPath());
   }
 #if defined(TARGET_ANDROID)
@@ -1315,7 +1318,7 @@ bool CGUIMediaWindow::OnPlayMedia(int iItem)
   else
     bResult = g_application.PlayFile(*pItem) == PLAYBACK_OK;
 
-  if (pItem->m_lStartOffset == STARTOFFSET_RESUME)
+  if (pItem->IsResuming())
     pItem->m_lStartOffset = 0;
 
   return bResult;
